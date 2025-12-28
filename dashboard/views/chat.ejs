@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'off-white': '#F5F5F0',
+                        zinc: {
+                            50: '#FAFAFA',
+                            100: '#F5F5F5',
+                            850: '#1A1A1A',
+                            900: '#111111',
+                            950: '#000000', // Deep Black
+                        },
+                        emerald: tailwind.colors.zinc,
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px) scale(0.98)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            font-size: 20px;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <script>
+        // Theme Check
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body
+    class="bg-off-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 h-screen flex flex-col overflow-hidden font-sans relative selection:bg-zinc-500/30 transition-colors duration-300">
+
+    <!-- Ambient Background -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div
+            class="absolute top-0 left-1/4 w-96 h-96 bg-zinc-400/10 dark:bg-zinc-800/10 rounded-full blur-3xl opacity-20">
+        </div>
+        <div
+            class="absolute bottom-0 right-1/4 w-96 h-96 bg-zinc-300/10 dark:bg-zinc-700/10 rounded-full blur-3xl opacity-20">
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header
+        class="px-6 py-4 flex justify-between items-center z-20 sticky top-0 shadow-lg shadow-black/5 dark:shadow-black/20 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-0.5 shadow-md border border-zinc-200 dark:border-zinc-700">
+                <div
+                    class="w-full h-full bg-white dark:bg-zinc-900 rounded-[14px] flex items-center justify-center transition-colors">
+                    <svg class="w-6 h-6 text-zinc-800 dark:text-zinc-200" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Real Estate Assistant</h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-zinc-500 animate-pulse-slow"></span>
+                    Online & Ready
+                </p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="toggleTheme()"
+                class="p-2.5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800/50 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-sm"
+                title="Toggle Theme">
+                <!-- Sun Icon (Dark Mode) -->
+                <svg class="w-5 h-5 hidden dark:block text-zinc-100" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                    </path>
+                </svg>
+                <!-- Moon Icon (Light Mode) -->
+                <svg class="w-5 h-5 block dark:hidden text-zinc-500" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                    </path>
+                </svg>
+            </button>
+            <button onclick="clearChat()"
+                class="p-2.5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800/50 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-sm"
+                title="Clear Chat">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                </svg>
+            </button>
+            <a href="/"
+                class="p-2.5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800/50 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-sm"
+                title="Back to Dashboard">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                    </path>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <main id="messages" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-hide scroll-smooth relative z-10">
+        <!-- Welcome Message -->
+        <div class="flex justify-start animate-fade-in-up">
+            <div
+                class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-2xl rounded-tl-sm px-6 py-4 shadow-xl max-w-[85%] md:max-w-[75%] transition-colors">
+                <p class="text-sm md:text-base leading-relaxed text-zinc-700 dark:text-zinc-200">
+                    Hello! I'm your AI real estate assistant. <br>
+                    How can I help you find your dream property today?
+                </p>
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">AI Assistant</span>
+                    <span class="text-[10px] text-zinc-300 dark:text-zinc-600">•</span>
+                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500">Just now</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" class="hidden px-8 pb-4 relative z-10">
+        <div class="flex justify-start animate-fade-in-up">
+            <div
+                class="bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5 shadow-md">
+                <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce"
+                    style="animation-delay: 0ms"></div>
+                <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce"
+                    style="animation-delay: 150ms"></div>
+                <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce"
+                    style="animation-delay: 300ms"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <footer class="p-4 md:p-6 bg-transparent relative z-20">
+        <div
+            class="max-w-4xl mx-auto relative bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-2 transform transition-all hover:scale-[1.01] duration-300">
+            <input type="text" id="user-input"
+                class="w-full bg-zinc-50/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 rounded-xl pl-5 pr-14 py-4 focus:outline-none focus:bg-white dark:focus:bg-zinc-900/80 transition-all text-sm md:text-base font-medium border border-transparent focus:border-zinc-200 dark:focus:border-zinc-800"
+                placeholder="Type your message..." autocomplete="off">
+            <button onclick="sendMessage()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 bg-zinc-900 dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="text-center mt-3">
+            <p class="text-[10px] text-zinc-400 dark:text-zinc-600">AI can make mistakes. Please verify important
+                details.</p>
+        </div>
+    </footer>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const userInput = document.getElementById('user-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function getOrCreateChatId() {
+            let chatId = sessionStorage.getItem('chat_id');
+            if (!chatId) {
+                chatId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                sessionStorage.setItem('chat_id', chatId);
+            }
+            return chatId;
+        }
+
+        const chatId = getOrCreateChatId();
+        userInput.focus();
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        function appendMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in-up mb-4`;
+
+            const bubble = document.createElement('div');
+
+            if (isUser) {
+                // User Bubble: Zinc-900 (Light) / White (Dark)
+                bubble.className = 'max-w-[85%] md:max-w-[75%] bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl rounded-tr-sm px-6 py-3 shadow-xl transform hover:scale-[1.01] transition-transform duration-300';
+            } else {
+                // AI Bubble: White (Light) / Zinc-900 (Dark)
+                bubble.className = 'max-w-[85%] md:max-w-[75%] bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-2xl rounded-tl-sm px-6 py-4 shadow-xl transform hover:scale-[1.01] transition-transform duration-300';
+            }
+
+            const p = document.createElement('p');
+            p.className = `text-sm md:text-base leading-relaxed ${isUser ? 'text-white dark:text-zinc-900 font-medium' : 'text-zinc-700 dark:text-zinc-200'}`;
+            p.textContent = text;
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = `flex items-center gap-2 mt-2 ${isUser ? 'justify-end' : 'justify-start'}`;
+
+            if (!isUser) {
+                const badge = document.createElement('span');
+                badge.className = 'text-[10px] text-zinc-400 dark:text-zinc-500 font-medium';
+                badge.innerText = 'AI Assistant';
+                metaDiv.appendChild(badge);
+
+                const dot = document.createElement('span');
+                dot.className = 'text-[10px] text-zinc-300 dark:text-zinc-600';
+                dot.innerText = '•';
+                metaDiv.appendChild(dot);
+            }
+
+            const time = document.createElement('span');
+            time.className = `text-[10px] ${isUser ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-400 dark:text-zinc-500'}`;
+            time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            metaDiv.appendChild(time);
+
+            bubble.appendChild(p);
+            bubble.appendChild(metaDiv);
+            div.appendChild(bubble);
+
+            messagesContainer.appendChild(div);
+            scrollToBottom();
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            userInput.value = '';
+            appendMessage(text, true);
+            showTyping();
+
+            try {
+                const response = await fetch('/chat/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, chatId: chatId })
+                });
+
+                const data = await response.json();
+                hideTyping();
+
+                if (data.reply) {
+                    appendMessage(data.reply, false);
+                } else {
+                    appendMessage("Sorry, I encountered an error.", false);
+                }
+
+            } catch (error) {
+                hideTyping();
+                console.error('Error:', error);
+                appendMessage("Sorry, I'm having trouble connecting.", false);
+            }
+        }
+
+        async function clearChat() {
+            if (confirm('Clear chat history?')) {
+                messagesContainer.innerHTML = '';
+                sessionStorage.removeItem('chat_id');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

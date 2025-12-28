@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+credentials.json
+
+# Database & Logs
+*.db
+*.sqlite
+logs/
+
+# Compiled Java Classes
+*.class
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
